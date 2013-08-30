@@ -1,37 +1,90 @@
 package pl.pragmatists.objectCalisthenics.circuitSimulator.circuit;
 
-import pl.pragmatists.objectCalisthenics.circuitSimulator.OnSignalChanged;
-import pl.pragmatists.objectCalisthenics.circuitSimulator.bit.Bit;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.gate.or.GateOr;
-import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WeldWirings;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.Wire;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireEnd;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireStart;
 
 public class Adder {
 
-    public Adder(WireEnd in1, WireEnd in2, WireEnd carryIn, WireEnd sum, WireEnd carryOut) {
-        WireEnd halfAdder1End1 = new WireEnd();
-        WireEnd halfAdder1End2 = new WireEnd();
-        new HalfAdder(in1, in2, halfAdder1End1, halfAdder1End2);
+    private HalfAdder halfAdder;
+    private HalfAdder halfAdder2;
+    private GateOr gateOr;
 
+    public Adder() {
+        halfAdder = new HalfAdder();
+        halfAdder2 = new HalfAdder();
+        gateOr = new GateOr();
 
-        WireEnd halfAdder2End2 = new WireEnd();
-        WireEnd halfAdder2In1 = new WireEnd();
-        new HalfAdder(halfAdder2In1, carryIn, sum, halfAdder2End2);
-
-        carryIn.addOnSignalChangedListener(new OnSignalChanged() {
-
-            public void signalChangedTo(Bit bit) {
-                System.out.println(bit);
-            }
-        });
-
-        WireEnd gateOrIn1 = new WireEnd();
-        WireEnd gateOrIn2 = new WireEnd();
-        new GateOr(gateOrIn1, gateOrIn2, carryOut);
-
-        WeldWirings wirings = new WeldWirings();
-        wirings.wire(halfAdder1End1, halfAdder2In1);
-        wirings.wire(halfAdder2End2, gateOrIn1);
-        wirings.wire(halfAdder1End2, gateOrIn2);
+        {
+            Wire wire = new Wire();
+            halfAdder.wireSumTo(wire);
+            halfAdder2.wireInput1To(wire);
+        }
+        {
+            Wire wire = new Wire();
+            halfAdder.wireCarryTo(wire);
+            gateOr.wireInput1To(wire);
+        }
+        {
+            Wire wire = new Wire();
+            halfAdder2.wireCarryTo(wire);
+            gateOr.wireInput2To(wire);
+        }
     }
+
+    public Adder(WireEnd in1, WireEnd in2, WireEnd carryIn, WireStart sum, WireStart carryOut) {
+
+        HalfAdder halfAdder = new HalfAdder();
+        HalfAdder halfAdder2 = new HalfAdder();
+        GateOr gateOr = new GateOr();
+
+        {
+            halfAdder.wireInput1To(in1);
+            halfAdder.wireInput2To(in2);
+            halfAdder2.wireInput2To(carryIn);
+            halfAdder2.wireSumTo(sum);
+            gateOr.wireOutputTo(carryOut);
+        }
+        {
+            Wire wire = new Wire();
+            halfAdder.wireSumTo(wire);
+            halfAdder2.wireInput1To(wire);
+        }
+        {
+            Wire wire = new Wire();
+            halfAdder.wireCarryTo(wire);
+            gateOr.wireInput1To(wire);
+        }
+        {
+            Wire wire = new Wire();
+            halfAdder2.wireCarryTo(wire);
+            gateOr.wireInput2To(wire);
+        }
+
+
+    }
+
+    public void wireInput1To(WireEnd wire) {
+        halfAdder.wireInput1To(wire);
+    }
+
+    public void wireInput2To(WireEnd wire) {
+        halfAdder.wireInput2To(wire);
+
+    }
+
+    public void wireCarryTo(WireEnd wire) {
+        halfAdder2.wireInput2To(wire);
+    }
+
+    public void wireSumTo(WireStart wire) {
+        halfAdder2.wireSumTo(wire);
+    }
+
+    public void wireCarryOutputTo(WireStart wire) {
+        gateOr.wireOutputTo(wire);
+    }
+
+
 }

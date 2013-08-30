@@ -2,16 +2,23 @@ package pl.pragmatists.objectCalisthenics.circuitSimulator.gate.inverter;
 
 import pl.pragmatists.objectCalisthenics.circuitSimulator.OnSignalChanged;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.bit.Bit;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.Wire;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireEnd;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireStart;
 
 public class GateInverter {
 
-    private final WireEnd out;
+    private WireStart out;
     private Bit bit;
 
-    public GateInverter(WireEnd input, WireEnd out) {
+    public GateInverter(WireEnd input, WireStart out) {
         input.addOnSignalChangedListener(updateBit());
         this.out = out;
+    }
+
+    public GateInverter() {
+        this.out = new Wire();
+        this.bit = Bit.zero;
     }
 
     private OnSignalChanged updateBit() {
@@ -25,6 +32,15 @@ public class GateInverter {
 
     private void recalculate() {
         out.signaledChangedTo(bit.not());
+    }
+
+    public void wireInputTo(WireEnd wire) {
+        wire.addOnSignalChangedListener(updateBit());
+    }
+
+    public void wireOutputTo(Wire wire) {
+        this.out = wire;
+        recalculate();
     }
 
 }

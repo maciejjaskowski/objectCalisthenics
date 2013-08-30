@@ -5,25 +5,42 @@ import pl.pragmatists.objectCalisthenics.circuitSimulator.OnSignalChanged;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.bit.Bit;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.input.Input;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.input.Operation;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.Wire;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireEnd;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireStart;
 
 public class SimpleGate {
 
-    private final WireEnd out;
-    private final UnwiredSimpleGate unwiredSimpleGate;
+    private WireStart out;
+    private UnwiredSimpleGate unwiredSimpleGate;
 
-    public SimpleGate(WireEnd wire0, WireEnd wire1, WireEnd out, Operation operation) {
-        this.out = out;
+    public SimpleGate(Operation operation) {
         this.unwiredSimpleGate = new UnwiredSimpleGate(operation, new Input(zero, zero));
-        wire0.addOnSignalChangedListener(updateBit(0));
-        wire1.addOnSignalChangedListener(updateBit(1));
+        this.out = new Wire();
+    }
+
+    public void wireInput1To(WireEnd wire) {
+        wire.addOnSignalChangedListener(updateBit(0));
+    }
+
+    public void wireInput2To(WireEnd wire) {
+        wire.addOnSignalChangedListener(updateBit(1));
+    }
+
+    public void wireOutputTo(WireStart wire) {
+        this.out = wire;
+        recalculate();
+    }
+
+    private void recalculate() {
+        out.signaledChangedTo(unwiredSimpleGate.calculate());
     }
 
     private OnSignalChanged updateBit(final int index) {
         return new OnSignalChanged() {
             public void signalChangedTo(Bit bit) {
-                Bit result = unwiredSimpleGate.changeBit(index, bit);
-                out.signaledChangedTo(result);
+                unwiredSimpleGate.changeBit(index, bit);
+                recalculate();
             }
         };
     }

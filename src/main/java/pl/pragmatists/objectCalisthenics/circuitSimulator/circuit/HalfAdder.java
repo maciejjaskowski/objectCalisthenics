@@ -3,34 +3,62 @@ package pl.pragmatists.objectCalisthenics.circuitSimulator.circuit;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.gate.and.GateAnd;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.gate.inverter.GateInverter;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.gate.or.GateOr;
-import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WeldWirings;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.Wire;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireEnd;
-import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.Wirings;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireStart;
 
 public class HalfAdder {
 
-    private Wirings weldWirings;
+    private GateOr gateOr;
+    private GateAnd gateAnd;
+    private GateAnd gateAnd2;
+    private GateAnd gateAnd3;
 
-    public HalfAdder(WireEnd a, WireEnd b, WireEnd sum, WireEnd carry) {
+    public HalfAdder() {
 
-        WireEnd orOut = new WireEnd();
-        new GateOr(a, b, orOut);
+        gateOr = new GateOr();
+        gateAnd = new GateAnd();
+        gateAnd2 = new GateAnd();
+        gateAnd3 = new GateAnd();
+        GateInverter gateInverter = new GateInverter();
 
-        new GateAnd(a, b, carry);
+        {
+            Wire wire = new Wire();
+            gateOr.wireOutputTo(wire);
+            gateAnd3.wireInput1To(wire);
+        }
+        {
+            Wire wire = new Wire();
+            gateAnd.wireOutputTo(wire);
+            gateInverter.wireInputTo(wire);
+        }
+        {
+            Wire wire = new Wire();
+            gateInverter.wireOutputTo(wire);
+            gateAnd3.wireInput2To(wire);
+        }
 
 
-        WireEnd inverterOut = new WireEnd();
-        WireEnd inverterIn = new WireEnd();
-        new GateInverter(inverterIn, inverterOut);
+    }
 
-        WireEnd gateAnd2WireEnd = new WireEnd();
-        WireEnd gateAnd2Wire2End = new WireEnd();
-        new GateAnd(gateAnd2WireEnd, gateAnd2Wire2End, sum);
+    public void wireInput1To(WireEnd a) {
+        gateOr.wireInput1To(a);
+        gateAnd.wireInput1To(a);
+        gateAnd2.wireInput1To(a);
+    }
 
-        weldWirings = new WeldWirings();
-        weldWirings.wire(orOut, gateAnd2WireEnd);
-        weldWirings.wire(inverterOut, gateAnd2Wire2End);
-        weldWirings.wire(carry, inverterIn);
+    public void wireInput2To(WireEnd b) {
+        gateOr.wireInput2To(b);
+        gateAnd.wireInput2To(b);
+        gateAnd2.wireInput2To(b);
+    }
+
+    public void wireSumTo(WireStart sum) {
+        gateAnd3.wireOutputTo(sum);
+    }
+
+    public void wireCarryTo(Wire carry) {
+        gateAnd2.wireOutputTo(carry);
     }
 
 }
