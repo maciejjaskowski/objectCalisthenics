@@ -9,8 +9,13 @@ import pl.pragmatists.objectCalisthenics.circuitSimulator.bit.Bit;
 
 public class Wire implements WireStart, WireEnd{
 
-    private List<OnSignalChanged> listeners = new ArrayList<OnSignalChanged>();
-    private Bit bit = Bit.zero;
+    private List<OnSignalChanged> listeners;
+    private Bit bit;
+
+    public Wire() {
+        listeners = new ArrayList<OnSignalChanged>();
+        bit = Bit.zero;
+    }
 
     public void signaledChangedTo(Bit bit) {
         this.bit = bit;

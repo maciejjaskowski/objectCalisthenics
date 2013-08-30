@@ -2,6 +2,7 @@ package pl.pragmatists.objectCalisthenics.circuitSimulator.gate.inverter;
 
 import pl.pragmatists.objectCalisthenics.circuitSimulator.OnSignalChanged;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.bit.Bit;
+import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.DeadWireStart;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.Wire;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireEnd;
 import pl.pragmatists.objectCalisthenics.circuitSimulator.wire.WireStart;
@@ -17,7 +18,7 @@ public class GateInverter {
     }
 
     public GateInverter() {
-        this.out = new Wire();
+        this.out = new DeadWireStart();
         this.bit = Bit.zero;
     }
 
